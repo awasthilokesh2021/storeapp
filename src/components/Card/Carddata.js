@@ -1,11 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Card from "./Card";
+import axios from "axios";
 
 const Carddata = () => {
-  var settings = {
+  const [dataitem, setdataitem] = useState([]);
+
+  const getData = async () => {
+    try {
+      const res = await axios.get("http://localhost:8085/product");
+      const data = res.data.filter((item) => item.category === "free");
+      console.log(data);
+      setdataitem(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const settings = {
     dots: true,
     infinite: false,
     speed: 500,
@@ -39,8 +57,9 @@ const Carddata = () => {
       },
     ],
   };
+
   return (
-    <div className=" max-w-screen-2xl container mx-auto md:px-20 px-4">
+    <div className="max-w-screen-2xl container mx-auto md:px-20 px-4">
       <div>
         <h1 className="font-semibold text-xl pb-2">Free Offered Courses</h1>
         <p>
@@ -51,7 +70,9 @@ const Carddata = () => {
       </div>
       <div>
         <Slider {...settings}>
-          <Card />
+          {dataitem.map((item) => (
+            <Card item={item} key={item.id} />
+          ))}
         </Slider>
       </div>
     </div>
